@@ -32,11 +32,26 @@ Promise.all([
   updateVisualization(fullTimeDomain);
 }).catch(err => console.error("Error loading data:", err));
 
+function getGlucoseAtTime(participantId, time) {
+  const partData = allGlucoseData.filter(d => d.participant_id === participantId);
+  if (partData.length === 0) return null;
+  let closest = partData[0];
+  let minDiff = Math.abs(partData[0].TimeInMinutes - time);
+  partData.forEach(d => {
+    const diff = Math.abs(d.TimeInMinutes - time);
+    if (diff < minDiff) {
+      closest = d;
+      minDiff = diff;
+    }
+  });
+  return closest.Glucose;
+}
+
 function updateVisualization(timeDomain) {
   d3.select("#food-visualization").select("svg").remove();
 
   const selectedParticipants = Array.from(document.querySelectorAll(".participant-checkbox:checked"))
-                                   .map(cb => cb.value);
+                                    .map(cb => cb.value);
   let glucoseData = allGlucoseData.filter(d => selectedParticipants.includes(d.participant_id));
   let mealData = allMealData.filter(d => selectedParticipants.includes(d.participant_id));
 
@@ -103,40 +118,50 @@ function updateVisualization(timeDomain) {
     .y(d => y(d.Glucose));
 
   dataByParticipant.forEach((values, participant) => {
-    svg.append("path")
+    const path = svg.append("path")
        .datum(values)
        .attr("fill", "none")
        .attr("stroke", participantColors[participant] || "steelblue")
        .attr("stroke-width", 1.5)
        .attr("d", lineGenerator);
+
+    const totalLength = path.node().getTotalLength();
+    path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(2000)
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0);
   });
 
-  svg.selectAll("circle.meal")
+  svg.selectAll("circle.meal-dot")
     .data(mealData)
     .enter()
     .append("circle")
     .attr("class", "meal-dot")
     .attr("cx", d => x(d.TimeInMinutes))
     .attr("cy", d => {
-      const partData = dataByParticipant.get(d.participant_id);
-      if (partData && partData.length) {
-        const avgGlucose = d3.mean(partData, p => p.Glucose);
-        return y(avgGlucose);
-      }
-      return y((yMin + yMax) / 2);
+      const gValue = getGlucoseAtTime(d.participant_id, d.TimeInMinutes);
+      return gValue !== null ? y(gValue) : y((yMin + yMax) / 2);
     })
     .attr("r", 5)
     .attr("fill", "black")
     .attr("stroke", "white")
     .attr("stroke-width", 1)
     .on("click", (event, d) => {
-      d3.select("#meal-info").html(`
-        <p><strong>Meal:</strong> ${d.logged_food}</p>
-        <p><strong>Time (min):</strong> ${d.TimeInMinutes.toFixed(0)}</p>
-        <p><strong>Calories:</strong> ${d.calorie}</p>
-        <p><strong>Total Carbs:</strong> ${d.total_carb}</p>
-        <p><strong>Sugar:</strong> ${d.sugar}</p>
-      `);
+      d3.select("#tooltip")
+        .html(`
+          <p><strong>Meal:</strong> ${d.logged_food}</p>
+          <p><strong>Time (min):</strong> ${d.TimeInMinutes.toFixed(0)}</p>
+          <p><strong>Calories:</strong> ${d.calorie}</p>
+          <p><strong>Total Carbs:</strong> ${d.total_carb}</p>
+          <p><strong>Sugar:</strong> ${d.sugar}</p>
+        `)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 20) + "px")
+        .style("display", "block");
+      event.stopPropagation();
     })
     .on("mouseover", function(event, d) {
       d3.select(this).attr("fill", "darkred");
@@ -145,33 +170,11 @@ function updateVisualization(timeDomain) {
       d3.select(this).attr("fill", "black");
     });
 
-  if (timeDomain[1] - timeDomain[0] === 1440) {
-    dataByParticipant.forEach((values, participant) => {
-      const dayData = values.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
-      if (!dayData.length) return;
-      
-      const marker = svg.append("circle")
-        .attr("class", "moving-marker")
-        .attr("r", 6)
-        .attr("fill", participantColors[participant] || "steelblue")
-        .attr("stroke", "white")
-        .attr("stroke-width", 1);
-      
-      marker.attr("cx", x(dayData[0].TimeInMinutes))
-        .attr("cy", y(dayData[0].Glucose))
-        .transition()
-        .duration(5000)  
-        .ease(d3.easeLinear)
-        .attrTween("cx", function() {
-          const interp = d3.interpolateNumber(dayData[0].TimeInMinutes, dayData[dayData.length - 1].TimeInMinutes);
-          return t => x(interp(t));
-        })
-        .attrTween("cy", function() {
-          const interp = d3.interpolateNumber(dayData[0].Glucose, dayData[dayData.length - 1].Glucose);
-          return t => y(interp(t));
-        });
-    });
-  }
+  d3.select("body").on("click", function(event) {
+    if (!event.target.closest(".meal-dot")) {
+      d3.select("#tooltip").style("display", "none");
+    }
+  });
 }
 
 document.querySelectorAll(".participant-checkbox, #high-sugar, #high-calorie").forEach(input => {
