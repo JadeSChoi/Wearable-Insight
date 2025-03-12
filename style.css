@@ -1,0 +1,115 @@
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: white; 
+  }
+  
+
+  .chart-container {
+    display: flex; 
+    justify-content: space-evenly; 
+    max-width: 1600px;         
+    margin: 2rem auto;        
+  }
+  
+
+  .chart {
+    width: 450px;   
+    height: 300px;
+    position: relative;
+  }
+  
+
+  .chart-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+
+  .axis path, .axis line {
+    stroke: #ccc;
+  }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .legend div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .legend-box {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    border-radius: 3px;
+  }
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    background-color: #91a1b1;
+    color: white;
+    border: none;
+    padding: 0px 0px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 0px;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background-color: #2565aa;
+  }
+  
+  body {
+    font-family: sans-serif;
+    text-align: center;
+  }
+  
+  .slider-container {
+    margin-bottom: 20px;
+  }
+  
+  #chart-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  #participant-info {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+  .tooltip {
+    position: absolute;
+    background: #cf8d8d;
+    padding: 5px;
+    border-radius: 5px;
+    visibility: hidden;
+    font-size: 14px;
+  }
+  .horizontal-chart-container {
+    display: flex;         
+    justify-content: center; 
+    gap: 20px;               
+    margin-top: 20px;
+}
+
+.chart {
+    width: 120px;  
+    height: 300px;  
+    position: relative;
+}

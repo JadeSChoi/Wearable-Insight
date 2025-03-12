@@ -1,0 +1,7 @@
+Measurement,Diabetes,Non-Diabetes,ImpactCategory
+EDA,-0.1148,-0.1494,Both Groups
+HR,-0.1353,-0.0812,One Group
+IBI,-0.0272,0.0190,Neither
+TEMP,0.1052,0.1034,Both Groups
+ACC,0.1598,0.0058,One Group
+BVP,-0.0221,0.0023,Neither
