@@ -73,3 +73,27 @@
   pointer-events: none;
   opacity: 0.8;
 }
+
+.thin-text {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.thin-text h1,
+.thin-text h2,
+.thin-text h3 {
+  margin-top: 0;
+  font-weight: bold;
+}
+
+.thin-text p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 15px;
+}
