@@ -612,9 +612,9 @@ function updateCharts(hba1cLevel) {
 <div id="controls">
     <h2>Filters</h2>
     <div id="participant-filters">
-      <label><input type="checkbox" class="participant-checkbox" value="001" checked> Participant 001</label>
-      <label><input type="checkbox" class="participant-checkbox" value="006" checked> Participant 006</label>
-      <label><input type="checkbox" class="participant-checkbox" value="011" checked> Participant 011</label>
+      <label><input type="checkbox" class="participant-checkbox" value="001" checked> Participant 1</label>
+      <label><input type="checkbox" class="participant-checkbox" value="006" checked> Participant 2</label>
+      <label><input type="checkbox" class="participant-checkbox" value="011" checked> Participant 3</label>
     </div>
     <div id="meal-filters">
       <label><input type="checkbox" id="high-sugar" /> High Sugar Meals (sugar > 50)</label>
@@ -637,13 +637,9 @@ function updateCharts(hba1cLevel) {
     </div>
   </div>
   
-  <div id="food-visualization">
-  </div>
+  <div id="food-visualization"></div>
   
-  <div id="meal-details">
-    <h3>Meal Details</h3>
-    <div id="meal-info">Click on a meal dot to see details here.</div>
-  </div>
+  <div class="tooltip" id="tooltip"></div>
   
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script type="module" src="js/script.js"></script>
