@@ -4,12 +4,12 @@ function updateGlucoseMealTimeline() {
   d3.select("#food-visualization").select("svg").remove();
 
   Promise.all([
-    d3.csv("data/dexcom_all_standardized_filtered_final.csv", d => ({
+    d3.csv("data/df_final.csv", d => ({
       TimeInMinutes: +d.TimeInMinutes,
       Glucose: +d.Glucose,
       participant_id: d.participant_id
     })),
-    d3.csv("data/combined_food_glucose_standardized_filtered.csv", d => ({
+    d3.csv("data/food_final.csv", d => ({
       TimeInMinutes: +d.TimeInMinutes,
       logged_food: d.logged_food,
       calorie: +d.calorie,
@@ -98,9 +98,8 @@ function updateGlucoseMealTimeline() {
         if (partData && partData.length) {
           const avgGlucose = d3.mean(partData, p => p.Glucose);
           return y(avgGlucose);
-        } else {
-          return y((yMin + yMax) / 2);
         }
+        return y((yMin + yMax) / 2);
       })
       .attr("r", 5)
       .attr("fill", "black")
@@ -123,6 +122,7 @@ function updateGlucoseMealTimeline() {
       .on("mouseout", () => {
         d3.selectAll(".tooltip").remove();
       });
+
   }).catch(err => console.error("Error loading data: ", err));
 }
 
