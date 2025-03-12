@@ -1,6 +1,8 @@
 #food-visualization {
   margin: 40px auto;
   padding: 20px;
+  width: 100%;
+  max-width: 980px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -9,12 +11,6 @@
 .axis-label {
   fill: #333;
   font-size: 14px;
-}
-
-.x-axis,
-.y-axis {
-  font-size: 12px;
-  font-family: sans-serif;
 }
 
 .tooltip {
@@ -29,11 +25,11 @@
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.meal-marker {
+.meal-dot {
   cursor: pointer;
   transition: fill 0.2s ease;
 }
 
-.meal-marker:hover {
+.meal-dot:hover {
   fill: darkred;
 }
