@@ -58,10 +58,11 @@
       color: #123861;
     }
 
-    /* General chart container styles */
+    /* Adjusted chart container to center the charts */
     .chart-container {
       display: flex;
-      justify-content: space-around;
+      justify-content: center; /* changed from space-around */
+      gap: 40px;              /* added a gap for spacing */
       margin-top: 20px;
     }
     .chart {
@@ -97,10 +98,8 @@
       transform: translateX(0);
     }
 
-    /*
-      Note: the .chart width and height get overridden 
-      for the smaller charts used in the horizontal container
-    */
+    /* Note: the .chart width/height is overridden 
+       for the smaller charts used in the horizontal container */
     .chart {
       width: 120px; 
       height: 300px;
@@ -571,8 +570,8 @@
       <label><input type="checkbox" class="participant-checkbox" value="011" checked> Participant 3</label>
     </div>
     <div id="meal-filters">
-      <label><input type="checkbox" id="high-sugar" /> High Sugar Meals (sugar > 50)</label>
-      <label><input type="checkbox" id="high-calorie" /> High Calorie Meals (calories > 300)</label>
+      <label><input type="checkbox" id="high-sugar" /> High Sugar Meals (sugar &gt; 50)</label>
+      <label><input type="checkbox" id="high-calorie" /> High Calorie Meals (calories &gt; 300)</label>
     </div>
     <div id="date-selection">
       <h3>Select Day</h3>
