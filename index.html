@@ -61,8 +61,8 @@
     /* Adjusted chart container to center the charts */
     .chart-container {
       display: flex;
-      justify-content: center; /* changed from space-around */
-      gap: 40px;              /* added a gap for spacing */
+      justify-content: center;
+      gap: 40px;
       margin-top: 20px;
     }
     .chart {
@@ -241,7 +241,7 @@
   <div class="legend">
     <div>
       <span class="legend-box" style="background: pink;"></span>
-      <span>Sampled from participants with higher-than-normal HbA1c (>5.7)</span>
+      <span>Sampled from participants with higher-than-normal HbA1c (&gt;5.7)</span>
     </div>
     <div>
       <span class="legend-box" style="background: lightblue;"></span>
@@ -338,8 +338,9 @@
         d["Non-Diabetes"] = +d["Non-Diabetes"];
       });
 
+      // Expanded domain from [-0.2, 0.2] to [-0.22, 0.22] to prevent clipping
       const xScale = d3.scaleLinear()
-        .domain([-0.2, 0.2])
+        .domain([-0.22, 0.22])
         .range([margin.left, width - margin.right]);
 
       const yScale = d3.scaleBand()
@@ -523,17 +524,6 @@
           .attr("y", yScale(0))
           .attr("height", 0)
           .attr("fill", data[feature] > 0 ? "pink" : "lightblue")
-          .on("mouseover", function (event, d) {
-              tooltip.style("visibility", "visible")
-                     .html(`${featureNames[feature]}: ${data[feature].toFixed(3)}`);
-          })
-          .on("mousemove", function (event) {
-              tooltip.style("top", (event.pageY - 10) + "px")
-                     .style("left", (event.pageX + 10) + "px");
-          })
-          .on("mouseout", function () {
-              tooltip.style("visibility", "hidden");
-          })
           .transition()
           .duration(1000)
           .attr("y", yScale(Math.max(data[feature], 0)))
