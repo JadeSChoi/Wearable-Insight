@@ -58,7 +58,7 @@
       color: #123861;
     }
 
-    /* Center charts in a row */
+    /* Chart layout */
     .chart-container {
       display: flex;
       justify-content: center;
@@ -80,14 +80,13 @@
       stroke: #ccc;
     }
 
-    /* Horizontal chart container for the smaller bar charts */
+    /* Horizontal chart container */
     .horizontal-chart-container {
       display: flex;
       justify-content: center;
       gap: 20px;
       margin-top: 20px;
     }
-
     /* Fade/slide animation for bars */
     .bar {
       opacity: 0;
@@ -99,7 +98,7 @@
       transform: translateX(0);
     }
 
-    /* These small bar charts override the default .chart width/height */
+    /* Smaller charts override .chart width/height */
     .chart {
       width: 120px; 
       height: 300px;
@@ -313,14 +312,16 @@
     const colorNormal = "pink";
 
     function drawChart(data, svgSelector) {
-      // 1) Increase margins left and right
-      const margin = { top: 10, right: 40, bottom: 20, left: 140 },
-            width = 500,  // slightly wider chart
+      // 1) Larger margins and width
+      const margin = { top: 10, right: 80, bottom: 20, left: 140 },
+            width = 600,
             height = 300;
 
+      // 2) Overflow visible to ensure no bar is clipped
       const svg = d3.select(svgSelector)
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .style("overflow", "visible");
 
       if (!data || data.length === 0) {
         svg.append("text")
@@ -336,9 +337,9 @@
         d["Non-Diabetes"] = +d["Non-Diabetes"];
       });
 
-      // 2) Expand domain from [-0.2, 0.2] to [-0.25, 0.25] for more space
+      // 3) Domain expanded to [-0.3, 0.3]
       const xScale = d3.scaleLinear()
-        .domain([-0.25, 0.25])
+        .domain([-0.3, 0.3])
         .range([margin.left, width - margin.right]);
 
       const yScale = d3.scaleBand()
@@ -360,7 +361,7 @@
         .attr("transform", `translate(${margin.left}, 0)`)
         .call(yAxis);
 
-      // This rectangle draws the gray "little correlation" region from -0.1 to 0.1
+      // Gray region for -0.1 to 0.1
       svg.append("rect")
         .attr("x", xScale(-0.1))
         .attr("y", margin.top)
@@ -387,6 +388,7 @@
           const band = yScale.bandwidth();
           const barHeight = band * 0.2;
 
+          // Pink bar
           g.append("rect")
             .attr("y", yScale(d.Measurement) + band * 0.1)
             .attr("height", barHeight)
@@ -399,6 +401,7 @@
               .attr("x", xScale(Math.min(d.Diabetes, 0)))
               .attr("width", Math.abs(xScale(d.Diabetes) - xScale(0)));
 
+          // Lightblue bar
           g.append("rect")
             .attr("y", yScale(d.Measurement) + band * 0.5)
             .attr("height", barHeight)
@@ -413,12 +416,10 @@
         });
     }
 
-    //////////////////////////////////////////////////////////
-    // Main code: load CSV, split by category, call drawChart
-    //////////////////////////////////////////////////////////
+    // Main code: load CSV, then call drawChart for each category
     window.addEventListener("scroll", function() {
       let scrollPos = window.scrollY;
-      document.getElementById("hero-title").style.transform = `translateX(${-scrollPos * 1}px)`;
+      document.getElementById("hero-title").style.transform = `translateX(${-scrollPos}px)`;
       document.getElementById("hero-subtitle").style.opacity = Math.max(1 - scrollPos / 300, 0);
     });
 
@@ -501,7 +502,10 @@
         let svg = d3.select("#chart-" + feature);
         svg.selectAll("*").remove();
 
-        svg.attr("width", width).attr("height", height);
+        // Provide overflow: visible if needed
+        svg.attr("width", width)
+           .attr("height", height)
+           .style("overflow", "visible");
 
         svg.append("rect")
           .attr("x", margin.left)
@@ -547,7 +551,7 @@
   <header class="thin-text">
     <h1>Glucose and Meal Visualization</h1>
     <p>
-      This interactive visualization shows participants' glucose levels over time and marks the meal events along the glucose curve. 
+      This interactive visualization shows participants' glucose levels over time and marks the meal events along the glucose curve.
       Use the filters to select participants and meal criteria, and choose a day to focus on specific periods.
     </p>
   </header>
