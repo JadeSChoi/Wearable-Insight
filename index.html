@@ -29,48 +29,51 @@
 
   <!-- DATA EXPLANATION & METHODOLOGY -->
   
-  <div id="thin-text-2">
+  <div id="thin-text-2" class="expandable">
     <h3>Understanding the Data</h3>
-    <p>
-      In this analysis, we explore how various biometric signals—such as heart rate, body temperature, and movement—correlate with glucose levels. 
-      The goal is to determine whether wearable devices can detect meaningful glucose changes and help in early diabetes management.
-    </p>
-    <p><strong>What Are We Measuring?</strong></p>
-    <ul>
-      <li><strong>Glucose Value:</strong> Directly measured blood sugar levels.</li>
-      <li><strong>Accelerometer (ACC):</strong> Captures movement and activity levels.</li>
-      <li><strong>Blood Volume Pulse (BVP):</strong> Tracks changes in blood flow, associated with cardiovascular activity.</li>
-      <li><strong>Electrodermal Activity (EDA):</strong> Measures skin conductance, which relates to sweat and nervous system activity.</li>
-      <li><strong>Heart Rate (HR):</strong> Monitors beats per minute, potentially affected by glucose fluctuations.</li>
-      <li><strong>Interbeat Interval (IBI):</strong> The time between heartbeats, another cardiovascular metric.</li>
-      <li><strong>Skin Temperature (TEMP):</strong> Monitors body temperature variations.</li>
-    </ul>
-    <p><strong>What is Correlation?</strong></p>
-    <p>
-      Correlation measures the relationship between two variables. A positive correlation means that when glucose increases, the measured variable also increases. 
-      A negative correlation means that as glucose increases, the measured variable decreases. If correlation is close to zero, there is little to no meaningful relationship.
-    </p>
-    <h3>Methodology</h3>
-    <p>
-      We analyzed biometric data collected from wearable devices and glucose monitors. Participants were divided into two groups based on their HbA1c levels:
-    </p>
-    <ul>
-      <li><span style="color: #ff6b6b;"><strong>Diabetic Group:</strong></span> Participants with HbA1c > 5.7.</li>
-      <li><span style="color: #4a90e2;"><strong>Non-Diabetic Group:</strong></span> Participants with HbA1c ≤ 5.7.</li>
-    </ul>
-    <p>
-      For each participant, we computed correlation values between glucose levels and wearable measurements.
-      The results are categorized into three sections:
-    </p>
-    <ul>
-      <li><strong>Both Groups:</strong> Strong correlations exist in both diabetic and non-diabetic groups.</li>
-      <li><strong>One Group:</strong> A correlation exists in only one group.</li>
-      <li><strong>Neither:</strong> No significant correlation found.</li>
-    </ul>
-    <p>
-      To help visualize the results, we plotted the correlation values across different measurements.
-      The shaded gray area in the graphs represents little correlations (-0.1 to 0.1), while EVIDENCED correlations extend beyond this range.
-    </p>
+    <div class="expandable-content">
+      <p>
+        In this analysis, we explore how various biometric signals—such as heart rate, body temperature, and movement—correlate with glucose levels. 
+        The goal is to determine whether wearable devices can detect meaningful glucose changes and help in early diabetes management.
+      </p>
+      <p><strong>What Are We Measuring?</strong></p>
+      <ul>
+        <li><strong>Glucose Value:</strong> Directly measured blood sugar levels.</li>
+        <li><strong>Accelerometer (ACC):</strong> Captures movement and activity levels.</li>
+        <li><strong>Blood Volume Pulse (BVP):</strong> Tracks changes in blood flow, associated with cardiovascular activity.</li>
+        <li><strong>Electrodermal Activity (EDA):</strong> Measures skin conductance, which relates to sweat and nervous system activity.</li>
+        <li><strong>Heart Rate (HR):</strong> Monitors beats per minute, potentially affected by glucose fluctuations.</li>
+        <li><strong>Interbeat Interval (IBI):</strong> The time between heartbeats, another cardiovascular metric.</li>
+        <li><strong>Skin Temperature (TEMP):</strong> Monitors body temperature variations.</li>
+      </ul>
+      <p><strong>What is Correlation?</strong></p>
+      <p>
+        Correlation measures the relationship between two variables. A positive correlation means that when glucose increases, the measured variable also increases. 
+        A negative correlation means that as glucose increases, the measured variable decreases. If correlation is close to zero, there is little to no meaningful relationship.
+      </p>
+      <h3>Methodology</h3>
+      <p>
+        We analyzed biometric data collected from wearable devices and glucose monitors. Participants were divided into two groups based on their HbA1c levels:
+      </p>
+      <ul>
+        <li><span style="color: #ff6b6b;"><strong>Diabetic Group:</strong></span> Participants with HbA1c > 5.7.</li>
+        <li><span style="color: #4a90e2;"><strong>Non-Diabetic Group:</strong></span> Participants with HbA1c ≤ 5.7.</li>
+      </ul>
+      <p>
+        For each participant, we computed correlation values between glucose levels and wearable measurements.
+        The results are categorized into three sections:
+      </p>
+      <ul>
+        <li><strong>Both Groups:</strong> Strong correlations exist in both diabetic and non-diabetic groups.</li>
+        <li><strong>One Group:</strong> A correlation exists in only one group.</li>
+        <li><strong>Neither:</strong> No significant correlation found.</li>
+      </ul>
+      <p>
+        To help visualize the results, we plotted the correlation values across different measurements.
+        The shaded gray area in the graphs represents little correlations (-0.1 to 0.1), while EVIDENCED correlations extend beyond this range.
+      </p>
+    </div>
+    <button class="expand-btn">Read More ▼</button>
   </div>
 
   <!-- CORRELATION CHARTS -->
@@ -109,24 +112,26 @@
   </div>
 
   <!-- RESULTS INTERPRETATION -->
-  <div id="thin-text-3">
+  <div id="thin-text-3" class="expandable">
     <h3>Interpreting the Results</h3>
-    <p><strong>At a glance, we see that different biometric signals respond differently to glucose changes.</strong> Some measurements show strong correlations across all participants, while others vary based on diabetes status.</p>
-    
-    <h3>Breaking Down the Results</h3>
-    <p><strong>Both Groups:</strong> Electrodermal Activity (EDA) and Skin Temperature show correlation with glucose levels in both diabetic and non-diabetic participants.</p>
-    <p>💡 This suggests that <strong> might play a role in glucose fluctuations</strong> across all individuals.</p>
-    
-    <p><strong>One Group:</strong> Heart Rate (HR) and Accelerometer (ACC) correlate with glucose levels in diabetic participants, but not in non-diabetics.</p>
-    <p>💡 This could mean that <strong>heart rate fluctuations and movement patterns</strong> are more affected by glucose instability in diabetics.</p>
-    
-    <p><strong>Neither:</strong> Interbeat Interval (IBI) and Blood Volume Pulse (BVP) show <strong>weak or no correlation</strong> with glucose levels.</p>
-    <p>💡 These signals may not be reliable indicators of glucose change and might require further study to determine their role.</p>
-    
-    <p>We later break further down the groups to specific HbA1c levels among our testing data.</p>
+    <div class="expandable-content">
+      <p><strong>At a glance, we see that different biometric signals respond differently to glucose changes.</strong> Some measurements show strong correlations across all participants, while others vary based on diabetes status.</p>
+      
+      <h3>Breaking Down the Results</h3>
+      <p><strong>Both Groups:</strong> Electrodermal Activity (EDA) and Skin Temperature show correlation with glucose levels in both diabetic and non-diabetic participants.</p>
+      <p>💡 This suggests that <strong> might play a role in glucose fluctuations</strong> across all individuals.</p>
+      
+      <p><strong>One Group:</strong> Heart Rate (HR) and Accelerometer (ACC) correlate with glucose levels in diabetic participants, but not in non-diabetics.</p>
+      <p>💡 This could mean that <strong>heart rate fluctuations and movement patterns</strong> are more affected by glucose instability in diabetics.</p>
+      
+      <p><strong>Neither:</strong> Interbeat Interval (IBI) and Blood Volume Pulse (BVP) show <strong>weak or no correlation</strong> with glucose levels.</p>
+      <p>💡 These signals may not be reliable indicators of glucose change and might require further study to determine their role.</p>
+      
+      <p>We later break further down the groups to specific HbA1c levels among our testing data.</p>
 
-    <h3>HbA1c Level-impact-correlation breakdown</h3>
-
+      <h3>HbA1c Level-impact-correlation breakdown</h3>
+      </div>
+      <button class="expand-btn">Read More ▼</button>
   </div>
 
   <!-- HBA1C LEVEL-IMPACT SLIDER & CHARTS -->

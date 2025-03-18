@@ -25,11 +25,30 @@ Promise.all([
     participant_id: d.participant_id
   }))
 ]).then(([glucoseData, mealData]) => {
+  console.log("Glucose Data Loaded:", glucoseData.length);
+  console.log("Meal Data Loaded:", mealData.length);
+
+  if (!glucoseData.length || !mealData.length) {
+    console.error("No data loaded. Check CSV file paths.");
+    return;
+  }
+
   const participantsToShow = ["001", "006", "011"];
   allGlucoseData = glucoseData.filter(d => participantsToShow.includes(d.participant_id));
   allMealData = mealData.filter(d => participantsToShow.includes(d.participant_id));
-  updateVisualization(fullTimeDomain);
+
+  console.log("Filtered Glucose Data:", allGlucoseData);
+  console.log("Filtered Meal Data:", allMealData);
+
+  // Only call updateVisualization if data exists
+  if (allGlucoseData.length > 0) {
+    updateVisualization(fullTimeDomain);
+  } else {
+    console.error("No valid glucose data available.");
+  }
 }).catch(err => console.error("Error loading data:", err));
+
+
 
 function getGlucoseAtTime(participantId, time) {
   const partData = allGlucoseData.filter(d => d.participant_id === participantId);
@@ -45,16 +64,46 @@ function getGlucoseAtTime(participantId, time) {
   });
   return closest.Glucose;
 }
-
 function updateVisualization(timeDomain) {
   // Remove previous SVG if it exists
   d3.select("#food-visualization").select("svg").remove();
+  console.log("🟢 Running updateVisualization...");
+  console.log("🔹 Checking allGlucoseData:", allGlucoseData);
+  console.log("🔹 Checking allMealData:", allMealData);
+
+  if (!allGlucoseData || !Array.isArray(allGlucoseData)) {
+    console.error("❌ Error: allGlucoseData is not an array or is undefined.");
+    return;
+  }
+
+  if (!allMealData || !Array.isArray(allMealData)) {
+    console.error("❌ Error: allMealData is not an array or is undefined.");
+    return;
+  }
+
+  console.log("✅ All Glucose Data Length:", allGlucoseData.length);
+  console.log("✅ All Meal Data Length:", allMealData.length);
 
   // Get selected participants
   const selectedParticipants = Array.from(document.querySelectorAll(".participant-checkbox:checked"))
                                     .map(cb => cb.value);
+
+  console.log("✅ Selected Participants:", selectedParticipants);
+
+  if (!selectedParticipants || selectedParticipants.length === 0) {
+    console.error("❌ Error: No selected participants.");
+    return;
+  }
+
+  // Check if participant_id exists in data
+  console.log("First glucose data object:", allGlucoseData[0]);
+
+  if (!allGlucoseData[0].hasOwnProperty("participant_id")) {
+    console.error("❌ Error: participant_id key is missing in glucose data.");
+    return;
+  }
+
   let glucoseData = allGlucoseData.filter(d => selectedParticipants.includes(d.participant_id));
-  let mealData = allMealData.filter(d => selectedParticipants.includes(d.participant_id));
 
   // Apply meal filters (sugar, calorie, and carb)
   if (document.getElementById("high-sugar").checked) {
@@ -67,9 +116,6 @@ function updateVisualization(timeDomain) {
     mealData = mealData.filter(d => d.total_carb > 50);
   }
 
-  // Enforce strict boundaries based on current timeDomain
-  glucoseData = glucoseData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
-  mealData = mealData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
 
   // Define margins and dimensions
   const margin = { top: 20, right: 40, bottom: 50, left: 60 };
@@ -329,19 +375,26 @@ updateVisualization(fullTimeDomain);
 
 document.addEventListener("DOMContentLoaded", function () {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
-  const body = document.body;
 
-  // Check for saved preference
-  if (localStorage.getItem("dark-mode") === "enabled") {
-    body.classList.add("dark-mode");
+  if (!darkModeToggle) {
+    console.error("Dark mode button not found!");
+    return;
   }
 
-  // Toggle dark mode on button click
-  darkModeToggle.addEventListener("click", function () {
-    body.classList.toggle("dark-mode");
+  // Apply saved dark mode preference
+  if (localStorage.getItem("dark-mode") === "enabled") {
+    document.body.classList.add("dark-mode");
+  }
 
-    // Save user preference
-    if (body.classList.contains("dark-mode")) {
+  // Toggle dark mode when clicking the button
+  darkModeToggle.addEventListener("click", function () {
+    document.body.classList.toggle("dark-mode");
+
+    console.log("Dark mode toggled!"); // Debugging log
+    console.log("Current body class:", document.body.classList);
+
+    // Save dark mode setting
+    if (document.body.classList.contains("dark-mode")) {
       localStorage.setItem("dark-mode", "enabled");
     } else {
       localStorage.setItem("dark-mode", "disabled");
@@ -349,3 +402,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".expand-btn").forEach(button => {
+    button.addEventListener("click", function () {
+      const parent = this.closest(".expandable");
+      const content = parent.querySelector(".expandable-content");
+
+      if (parent.classList.contains("expanded")) {
+        parent.classList.remove("expanded");
+        content.style.maxHeight = "50px"; // Collapse
+        this.innerText = "Read More ▼";
+      } else {
+        parent.classList.add("expanded");
+        content.style.maxHeight = "1000px"; // Expand
+        this.innerText = "Collapse ▲";
+      }
+    });
+  });
+});

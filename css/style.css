@@ -252,16 +252,78 @@ body {
   pointer-events: none;
 }
 
-<<<<<<< HEAD
+.expandable {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 40px; /* Makes space for the button */
+}
+
+.expandable-content {
+  max-height: 4.5em; /* Show ~3 lines before collapsing */
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.expand-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background-color: #0077ff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.expandable {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 40px; /* Makes space for the button */
+}
+
+.expandable-content {
+  max-height: 4.5em; /* Show ~3 lines before collapsing */
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.expand-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background-color: #0077ff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.expand-btn:hover {
+  background-color: #0055cc;
+}
+
+
+.expand-btn:hover {
+  background-color: #0055cc;
+}
+
+
+
 .path-animation {
   stroke-dasharray: 0;
   stroke-dashoffset: 0;
-=======
 .thin-text h1,
 .thin-text h2,
 .thin-text h3 {
   margin-top: 0;
   font-weight: bold;
+}
 }
 
 .thin-text p {
@@ -303,6 +365,27 @@ button {
   background-color: #121212 !important; /* Dark global background */
   color: #e0e0e0 !important; /* Light text */
 }
+#dark-mode-toggle-container {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 1000; /* Ensure it's above everything */
+}
+
+#dark-mode-toggle {
+  cursor: pointer;
+  background: #222;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#dark-mode-toggle:hover {
+  background: #444;
+}
+
 .dark-mode .thin-text, 
 .dark-mode .thin-text p, 
 .dark-mode .thin-text h1, 
@@ -405,5 +488,41 @@ button {
 .dark-mode .axis path, 
 .dark-mode .axis line {
   stroke: #cccccc !important;
->>>>>>> dece05e90bd9ef6815b0dffd7bc7bd977a92b55d
+}
+/* Default collapsed state */
+.expandable-content {
+  max-height: 50px; /* Show only part of the content */
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+/* Expand when the parent div has .expanded */
+.expandable.expanded .expandable-content {
+  max-height: 1000px; /* Large enough to reveal full content */
+}
+
+/* Expand Button Styling */
+.expand-btn {
+  display: block;
+  background-color: #0077ff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.expand-btn:hover {
+  background-color: #0055cc;
+}
+
+/* Change button text when expanded */
+.expandable.expanded .expand-btn::after {
+  content: " ▲"; /* Collapse icon */
+}
+
+.expandable:not(.expanded) .expand-btn::after {
+  content: " ▼"; /* Default state */
 }
