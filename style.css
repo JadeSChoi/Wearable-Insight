@@ -4,7 +4,14 @@ body {
   padding: 0;
   font-family: sans-serif;
   background-color: white; 
+  color: #000; /* base text color */
   text-align: center;
+}
+
+/* A .dark-mode wrapper for dark mode overrides */
+body.dark-mode {
+  background-color: #121212; 
+  color: #ddd; /* fallback text color */
 }
 
 /* Main chart container */
@@ -27,12 +34,25 @@ body {
   text-align: center;
   font-weight: bold;
   margin-bottom: 0.5rem;
+  /* Force the chart title to a specific color if needed */
+  fill: #000;  /* for SVG text elements */
+  color: #000; /* for normal text elements */
 }
 
 /* Axis styling */
 .axis path,
 .axis line {
   stroke: #ccc;
+}
+
+/* Axis text color for normal (light) mode */
+.axis text {
+  fill: #000; 
+}
+
+/* When body has .dark-mode, style the axis text accordingly */
+body.dark-mode .axis text {
+  fill: #fff; /* or #ccc, to keep them visible against dark bg */
 }
 
 /* Legend styling */
@@ -120,11 +140,13 @@ button:hover {
   position: relative;
 }
 
+/* Dark-mode toggle button container */
 #dark-mode-toggle-container {
   text-align: right;
   padding: 10px;
 }
 
+/* Actual toggle button */
 #dark-mode-toggle {
   cursor: pointer;
   background: #222;
