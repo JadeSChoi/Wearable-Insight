@@ -482,3 +482,10 @@ button {
 .dark-mode .axis line {
   stroke: #cccccc !important;
 }
+
+
+.expandable-content {
+  max-height: none !important;
+  overflow: visible !important;
+  transition: none !important;
+}
