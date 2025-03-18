@@ -291,3 +291,113 @@ body {
   color: #333;
   margin-bottom: 15px;
 }
+
+/* Ensure all box elements switch to dark mode */
+/* Dark mode: Change entire background */
+.dark-mode {
+  background-color: #121212 !important; /* Dark global background */
+  color: #e0e0e0 !important; /* Light text */
+}
+.dark-mode .thin-text, 
+.dark-mode .thin-text p, 
+.dark-mode .thin-text h1, 
+.dark-mode .thin-text h2, 
+.dark-mode .thin-text h3 {
+  color: #ffffff !important; /* Force white text */
+}
+.dark-mode #hero,
+.dark-mode #thin-content,
+.dark-mode #thin-text-2,
+.dark-mode #thin-text-3,
+.dark-mode #thin-text-4,
+.dark-mode .chart-container,
+.dark-mode .legend,
+.dark-mode .slider-container,
+.dark-mode .horizontal-chart-container {
+  background-color: #1e1e1e !important; /* Dark background */
+  color: #ffffff !important; /* White text */
+  border: 1px solid #444 !important; /* Subtle border */
+}
+/* Dark Mode: Ensure Diet & Meal Visualization Section Updates */
+.dark-mode .thin-text {
+  background-color: #1e1e1e !important; /* Dark background for headers */
+  color: #ffffff !important; /* White text */
+  border: 1px solid #777 !important; /* Grey outline */
+  padding: 15px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1); /* Soft glow effect */
+}
+
+/* Dark Mode: Filters & Controls */
+.dark-mode #controls {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  border: 1px solid #777 !important;
+  padding: 15px;
+}
+
+/* Dark Mode: Filter Checkboxes */
+.dark-mode input[type="checkbox"] {
+  accent-color: #bb86fc; /* Purple color for checkboxes */
+}
+
+/* Dark Mode: Buttons */
+.dark-mode .day-button {
+  background-color: #333 !important;
+  color: #ffffff !important;
+  border: 1px solid #555 !important;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+
+.dark-mode .day-button:hover {
+  background-color: #444 !important;
+}
+
+/* Fix H3 Titles Inside Controls */
+.dark-mode #controls h3 {
+  color: #ffffff !important;
+}
+
+/* Fix Labels */
+.dark-mode label {
+  color: #ffffff !important;
+}
+
+/* Make sure any buttons inside the boxes also change */
+.dark-mode button {
+  background-color: #333 !important;
+  color: #ffffff !important;
+  border: 1px solid #555 !important;
+}
+
+.dark-mode button:hover {
+  background-color: #444 !important;
+}
+
+/* Make sure input fields (sliders, checkboxes) are visible */
+.dark-mode input, 
+.dark-mode select {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+  border: 1px solid #555 !important;
+}
+
+/* Update legend colors for readability */
+.dark-mode .legend-box {
+  border: 1px solid #ffffff !important;
+}
+
+/* Fix Charts & Graphs (D3 elements) */
+.dark-mode .chart-container {
+  background-color: #1e1e1e !important;
+}
+
+.dark-mode svg text {
+  fill: #ffffff !important;
+}
+
+.dark-mode .axis path, 
+.dark-mode .axis line {
+  stroke: #cccccc !important;
+}
