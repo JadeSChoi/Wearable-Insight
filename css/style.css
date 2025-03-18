@@ -182,7 +182,6 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Controls styling */
 #controls {
   margin: 20px auto;
   padding: 10px;
@@ -199,7 +198,6 @@ body {
   margin-right: 15px;
 }
 
-/* Reset Zoom button */
 #resetZoom {
   padding: 5px 10px;
   background-color: #007bff;
@@ -212,13 +210,11 @@ body {
   background-color: #0056b3;
 }
 
-/* Axis label style */
 .axis-label {
   fill: #333;
   font-size: 14px;
 }
 
-/* Tooltip styling */
 .tooltip {
   position: fixed;
   background: rgba(255, 255, 255, 0.95);
@@ -231,7 +227,6 @@ body {
   display: none;
 }
 
-/* Meal dot styling */
 .meal-dot {
   cursor: pointer;
   transition: fill 0.2s ease;
@@ -240,14 +235,12 @@ body {
   fill: darkred;
 }
 
-/* Brush overlay styling */
 .brush .selection {
   fill: rgba(0, 123, 255, 0.3);
   stroke: #007bff;
   stroke-width: 1;
 }
 
-/* Response marker styling */
 .response-marker {
   pointer-events: none;
 }
@@ -255,11 +248,11 @@ body {
 .expandable {
   position: relative;
   overflow: hidden;
-  padding-bottom: 40px; /* Makes space for the button */
+  padding-bottom: 40px; 
 }
 
 .expandable-content {
-  max-height: 4.5em; /* Show ~3 lines before collapsing */
+  max-height: 4.5em; 
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
 }
@@ -281,11 +274,11 @@ body {
 .expandable {
   position: relative;
   overflow: hidden;
-  padding-bottom: 40px; /* Makes space for the button */
+  padding-bottom: 40px; 
 }
 
 .expandable-content {
-  max-height: 4.5em; /* Show ~3 lines before collapsing */
+  max-height: 4.5em; 
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
 }
