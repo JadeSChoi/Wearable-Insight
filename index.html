@@ -23,6 +23,8 @@
       <p><strong>Wearable devices are transforming healthcare.</strong> With the rise of smartwatches and fitness trackers, health monitoring is more accessible than ever. Some wearables have even been credited with saving lives during medical emergencies.</p>
       <p><strong>Diabetes is a growing concern.</strong> As global obesity rates increase, so does the prevalence of diabetes. Research shows a clear correlation between obesity and diabetes, making early detection more critical than ever.</p>
       <p><strong>Can wearable devices help track glucose changes?</strong> If continuous glucose monitors and other wearable sensors can detect patterns in blood sugar levels, they could provide early warnings and help prevent dangerous fluctuations.</p>
+      <p><strong>Can glucose device tracking data reveal anything about the diet we consume?</strong>Another key way in which these wearable devices could be impactful is based on their constant tracking of glucose level, which provides continuous data throughout the day and helps users view the fluctuation as the day goes. This data pair along with the food log data could be essentially in discovering possible connections in which the diet we eat has on our glucose levels. 
+      </p>
       <p>In this analysis, we explore real-world data from glucose monitoring devices, examining their effectiveness in tracking blood sugar variations across different health conditions.</p>
     </div>
   </div>
@@ -466,7 +468,9 @@
     <h1>Glucose and Meal Visualization</h1>
     <p>
       This interactive visualization shows participants' glucose levels over time and marks the meal events along the glucose curve. 
-      Use the filters to select participants and meal criteria, and choose a day to focus on specific periods.
+      Use the filters to select participants and meal criteria, and choose a day to focus on specific periods. As for the participant in which we 
+      used, we used the three participants with the least amount of missing data. Additionally we have created a fliter for classifing meals that could be extreme in certain areas. 
+      We determined that the sugar and carbs levels of 50g was enough to be classified as sugary and carb heavy meals.
     </p>
   </header>
 
@@ -496,5 +500,13 @@
     <div id="tooltip" class="tooltip"></div>
   <script type="module" src="js/script.js"></script>
   <link rel="stylesheet" href="css/style.css">
+
+  <header class="thin-text">
+    <h1>Final Takeaway</h1>
+    <p>
+      One surprising takeaway is that your skin’s sweat activity and temperature closely match changes in blood sugar for both people with and without diabetes. Many would assume that your heart rate or other heart signals are the main warning signs, but this visualization shows otherwise by separating the data into two groups and clearly marking which measures are most related to glucose changes. Because it highlights these patterns side by side with easy-to-read labels and color coding, it becomes obvious how these two signals remain consistently tied to blood sugar across different health conditions. This clear setup makes the visualization both simple to spot and difficult to ignore.
+
+    </p>
+  </header>
 </body>
 </html>
