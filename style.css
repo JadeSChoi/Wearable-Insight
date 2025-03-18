@@ -119,3 +119,21 @@ button:hover {
   height: 300px;
   position: relative;
 }
+
+#dark-mode-toggle-container {
+  text-align: right;
+  padding: 10px;
+}
+
+#dark-mode-toggle {
+  cursor: pointer;
+  background: #222;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+}
+
+#dark-mode-toggle:hover {
+  background: #444;
+}
