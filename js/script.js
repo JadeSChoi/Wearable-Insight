@@ -1,8 +1,8 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 let allGlucoseData, allMealData;
-
-const fullTimeDomain = [0, 14400];
+const fullTimeDomain = [0, 14400]; 
+const minutesPerDay = 1440;
 
 const participantColors = {
   "001": d3.schemeCategory10[0],
@@ -28,7 +28,6 @@ Promise.all([
   const participantsToShow = ["001", "006", "011"];
   allGlucoseData = glucoseData.filter(d => participantsToShow.includes(d.participant_id));
   allMealData = mealData.filter(d => participantsToShow.includes(d.participant_id));
-
   updateVisualization(fullTimeDomain);
 }).catch(err => console.error("Error loading data:", err));
 
@@ -48,6 +47,7 @@ function getGlucoseAtTime(participantId, time) {
 }
 
 function updateVisualization(timeDomain) {
+  
   d3.select("#food-visualization").select("svg").remove();
 
   const selectedParticipants = Array.from(document.querySelectorAll(".participant-checkbox:checked"))
@@ -62,6 +62,9 @@ function updateVisualization(timeDomain) {
     mealData = mealData.filter(d => d.calorie > 300);
   }
 
+  glucoseData = glucoseData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
+  mealData = mealData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
+
   const dataByParticipant = d3.group(glucoseData, d => d.participant_id);
 
   const yMin = d3.min(glucoseData, d => d.Glucose);
@@ -72,59 +75,82 @@ function updateVisualization(timeDomain) {
   const height = 500 - margin.top - margin.bottom;
 
   const svg = d3.select("#food-visualization")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .call(d3.zoom().scaleExtent([1, 10]).on("zoom", ({transform}) => {
-      svg.attr("transform", transform);
-    }))
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  const x = d3.scaleLinear()
-    .domain(timeDomain)
-    .range([0, width]);
+  
+  let dayStart = Math.floor(timeDomain[0] / minutesPerDay) + 1;
+  let dayEnd = Math.ceil(timeDomain[1] / minutesPerDay);
+  const days = d3.range(dayStart, dayEnd + 1).map(d => `Day ${d}`);
+  const x = d3.scaleBand()
+              .domain(days)
+              .range([0, width])
+              .padding(0.1);
+
+  const isZoomedIn = (timeDomain[1] - timeDomain[0]) < minutesPerDay;
+  let xAxis;
+  if (isZoomedIn) {
+    x.domain([timeDomain[0], timeDomain[1]]);
+    xAxis = d3.axisBottom(x)
+              .tickFormat(d => {
+                let hours = Math.floor(d % minutesPerDay / 60);
+                let minutes = d % 60;
+                return `${hours}:${minutes.toString().padStart(2, '0')}`;
+              });
+  } else {
+    xAxis = d3.axisBottom(x);
+  }
 
   const y = d3.scaleLinear()
-    .domain([yMin - 5, yMax + 5])
-    .range([height, 0]);
+              .domain([yMin - 5, yMax + 5])
+              .range([height, 0]);
+
+  const xAxisG = svg.append("g")
+                    .attr("class", "x-axis")
+                    .attr("transform", `translate(0, ${height})`)
+                    .call(xAxis);
+  svg.append("text")
+     .attr("class", "axis-label")
+     .attr("x", width / 2)
+     .attr("y", height + margin.bottom - 5)
+     .attr("text-anchor", "middle")
+     .text(isZoomedIn ? "Time (HH:MM)" : "Day");
 
   svg.append("g")
-    .attr("class", "x-axis")
-    .attr("transform", `translate(0, ${height})`)
-    .call(d3.axisBottom(x).ticks(10).tickFormat(d => d + " min"));
-
-  svg.append("g")
-    .attr("class", "y-axis")
-    .call(d3.axisLeft(y));
-
+     .attr("class", "y-axis")
+     .call(d3.axisLeft(y));
   svg.append("text")
-    .attr("class", "axis-label")
-    .attr("x", width / 2)
-    .attr("y", height + 40)
-    .attr("text-anchor", "middle")
-    .text("Time (minutes over 10 days)");
-
-  svg.append("text")
-    .attr("class", "axis-label")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -height / 2)
-    .attr("y", -40)
-    .attr("text-anchor", "middle")
-    .text("Glucose (mg/dL)");
+     .attr("class", "axis-label")
+     .attr("transform", "rotate(-90)")
+     .attr("x", -height / 2)
+     .attr("y", -40)
+     .attr("text-anchor", "middle")
+     .text("Glucose (mg/dL)");
 
   const lineGenerator = d3.line()
-    .x(d => x(d.TimeInMinutes))
-    .y(d => y(d.Glucose));
+                          .x(d => {
+                            // Determine day for each data point for categorical scale or use raw value for zoomed view
+                            if (!isZoomedIn) {
+                              let day = Math.floor(d.TimeInMinutes / minutesPerDay) + 1;
+                              return x(`Day ${day}`) + x.bandwidth() / 2;
+                            } else {
+                              return x(d.TimeInMinutes);
+                            }
+                          })
+                          .y(d => y(d.Glucose));
 
   dataByParticipant.forEach((values, participant) => {
+    values = values.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
+    if(values.length === 0) return;
     const path = svg.append("path")
        .datum(values)
        .attr("fill", "none")
        .attr("stroke", participantColors[participant] || "steelblue")
        .attr("stroke-width", 1.5)
        .attr("d", lineGenerator);
-
     const totalLength = path.node().getTotalLength();
     path
       .attr("stroke-dasharray", totalLength + " " + totalLength)
@@ -136,60 +162,89 @@ function updateVisualization(timeDomain) {
   });
 
   svg.selectAll("circle.meal-dot")
-    .data(mealData)
-    .enter()
-    .append("circle")
-    .attr("class", "meal-dot")
-    .attr("cx", d => x(d.TimeInMinutes))
-    .attr("cy", d => {
-      const gValue = getGlucoseAtTime(d.participant_id, d.TimeInMinutes);
-      return gValue !== null ? y(gValue) : y((yMin + yMax) / 2);
-    })
-    .attr("r", 5)
-    .attr("fill", "black")
-    .attr("stroke", "white")
-    .attr("stroke-width", 1)
-    .on("click", (event, d) => {
-      d3.select("#tooltip")
-        .html(`
-          <p><strong>Meal:</strong> ${d.logged_food}</p>
+     .data(mealData)
+     .enter()
+     .append("circle")
+     .attr("class", "meal-dot")
+     .attr("cx", d => {
+       if (!isZoomedIn) {
+         let day = Math.floor(d.TimeInMinutes / minutesPerDay) + 1;
+         return x(`Day ${day}`) + x.bandwidth() / 2;
+       } else {
+         return x(d.TimeInMinutes);
+       }
+     })
+     .attr("cy", d => {
+       const gValue = getGlucoseAtTime(d.participant_id, d.TimeInMinutes);
+       return gValue !== null ? y(gValue) : y((yMin + yMax) / 2);
+     })
+     .attr("r", 5)
+     .attr("fill", "black")
+     .attr("stroke", "white")
+     .attr("stroke-width", 1)
+     .on("click", (event, d) => {
+       const tooltip = d3.select("#tooltip");
+       tooltip.html(
+         `<p><strong>Meal:</strong> ${d.logged_food}</p>
           <p><strong>Time (min):</strong> ${d.TimeInMinutes.toFixed(0)}</p>
           <p><strong>Calories:</strong> ${d.calorie}</p>
           <p><strong>Total Carbs:</strong> ${d.total_carb}</p>
-          <p><strong>Sugar:</strong> ${d.sugar}</p>
-        `)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 20) + "px")
-        .style("display", "block");
-      event.stopPropagation();
-    })
-    .on("mouseover", function(event, d) {
-      d3.select(this).attr("fill", "darkred");
-    })
-    .on("mouseout", function(event, d) {
-      d3.select(this).attr("fill", "black");
-    });
+          <p><strong>Sugar:</strong> ${d.sugar}</p>`
+       )
+       .style("left", (event.clientX + 10) + "px")
+       .style("top", (event.clientY - 20) + "px")
+       .style("display", "block");
+       event.stopPropagation();
+     })
+     .on("mouseover", function(event, d) {
+       d3.select(this).attr("fill", "darkred");
+     })
+     .on("mouseout", function(event, d) {
+       d3.select(this).attr("fill", "black");
+     });
 
   d3.select("body").on("click", function(event) {
     if (!event.target.closest(".meal-dot")) {
       d3.select("#tooltip").style("display", "none");
     }
   });
+
+  
+  const brush = d3.brushX()
+                  .extent([[0, 0], [width, height]])
+                  .on("end", brushed);
+  svg.append("g")
+     .attr("class", "brush")
+     .call(brush);
+
+  svg.selectAll("circle").raise();
+
+  function brushed({selection}) {
+    if (!selection) return;
+    let [x0, x1] = selection;
+    let newDomain;
+    if (!isZoomedIn) {
+      
+      let day0 = Math.floor(x0 / (width / days.length)) + dayStart;
+      let day1 = Math.floor(x1 / (width / days.length)) + dayStart;
+      newDomain = [(day0 - 1) * minutesPerDay, day1 * minutesPerDay];
+    } else {
+      newDomain = [x.invert(x0), x.invert(x1)];
+    }
+    svg.select(".brush").call(brush.move, null);
+    updateVisualization(newDomain);
+  }
 }
 
-document.querySelectorAll(".participant-checkbox, #high-sugar, #high-calorie").forEach(input => {
-  input.addEventListener("change", () => {
-    updateVisualization(fullTimeDomain);
-  });
+document.getElementById("resetZoom").addEventListener("click", () => {
+  updateVisualization(fullTimeDomain);
 });
 
-document.querySelectorAll(".day-button").forEach(button => {
-  button.addEventListener("click", function() {
-    const day = +this.getAttribute("data-day");
-    const dayStart = (day - 1) * 1440;
-    const dayEnd = day * 1440;
-    updateVisualization([dayStart, dayEnd]);
+document.querySelectorAll(".participant-checkbox, #high-sugar, #high-calorie")
+  .forEach(input => {
+    input.addEventListener("change", () => {
+      updateVisualization(fullTimeDomain);
+    });
   });
-});
 
 updateVisualization(fullTimeDomain);
