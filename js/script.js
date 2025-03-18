@@ -320,21 +320,3 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".expand-btn").forEach(button => {
-    button.addEventListener("click", function () {
-      const parent = this.closest(".expandable");
-      const content = parent.querySelector(".expandable-content");
-
-      if (parent.classList.contains("expanded")) {
-        parent.classList.remove("expanded");
-        content.style.maxHeight = "50px"; // Collapse
-        this.innerText = "Read More ▼";
-      } else {
-        parent.classList.add("expanded");
-        content.style.maxHeight = "1000px"; // Expand
-        this.innerText = "Collapse ▲";
-      }
-    });
-  });
-});
