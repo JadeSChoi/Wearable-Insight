@@ -17,12 +17,15 @@
     <h1 id="hero-title">GLUCOSE LEVEL & MONITORED DATA</h1>
     <p id="hero-subtitle">An interactive analysis of glucose & health data</p>
     <div id="thin-content">
-      <p><strong>Wearable devices are transforming healthcare.</strong> With the rise of smartwatches and fitness trackers, health monitoring is more accessible than ever. Some wearables have even been credited with saving lives during medical emergencies.</p>
+      <p><strong>Did you know that one in ten Americans suffer from type 2 diabetes? In fact one out of every three American adults have prediabetes, putting them at an inherently higher risk of diabetes. 
+      </strong></p>
       <p><strong>Diabetes is a growing concern.</strong> As global obesity rates increase, so does the prevalence of diabetes. Research shows a clear correlation between obesity and diabetes, making early detection more critical than ever.</p>
+      <p><strong>Wearable devices are transforming healthcare.</strong> With the rise of smartwatches and fitness trackers, health monitoring is more accessible than ever. Some wearables have even been credited with being able to discover early signs of life changing diseases, which otherwise would have gone unnoticed. 
+      </p>
       <p><strong>Can wearable devices help track glucose changes?</strong> If continuous glucose monitors and other wearable sensors can detect patterns in blood sugar levels, they could provide early warnings and help prevent dangerous fluctuations.</p>
       <p><strong>Can glucose device tracking data reveal anything about the diet we consume?</strong>Another key way in which these wearable devices could be impactful is based on their constant tracking of glucose level, which provides continuous data throughout the day and helps users view the fluctuation as the day goes. This data pair along with the food log data could be essentially in discovering possible connections in which the diet we eat has on our glucose levels. 
       </p>
-      <p>In this analysis, we explore real-world data from glucose monitoring devices, examining their effectiveness in tracking blood sugar variations across different health conditions.</p>
+      <p><strong>In this analysis, we explore real-world data from glucose monitoring devices, examining their effectiveness in tracking blood sugar variations across different health conditions.</strong></p>
     </div>
   </div>
 
@@ -453,18 +456,39 @@
     <h1>Now How Does Glucose Tracking Relate With Our Diets?</h1>
     <p>
       Now that we have covered how biometrics could help track pre diabetes, let's explore how diets played a role in this study. 
-      We all know diabetes are often the result of poor eating habits and we aim to explore how exactly consuming food throughout the day would impact our glucose tracking levels.
+      We all know diabetes is often the result of poor eating habits and we aim to explore how exactly consuming food throughout the day would impact our glucose tracking levels.
+      But is it possible to use the glucose data collected from wearable devices in order to find trends and possibly make a valid conclusion on the impact diet has on our glucose levels?
     </p>
   </header>
 
+
+
   <header class="thin-text">
-    <h1>Glucose and Meal Visualization</h1>
-    <p>
-      This interactive visualization shows participants' glucose levels over time and marks the meal events along the glucose curve. 
-      Use the filters to select participants and meal criteria, and choose a day to focus on specific periods. As for the participant in which we 
-      used, we used the three participants with the least amount of missing data. Additionally we have created a fliter for classifing meals that could be extreme in certain areas. 
-      We determined that the sugar and carbs levels of 50g was enough to be classified as sugary and carb heavy meals.
-    </p>
+    <h3>Understanding the Data</h3>
+        <p>
+          In this analysis, we explore how glucose fluctuates over time and how it reacts to when someone is eating. We hope to determine which qualities of food have a significant impact on the glucose levels of people in order to help viewers get a broader understanding of the impact of the food they consume. 
+        </p>
+        
+        <h3>Methodology</h3>
+        <p>
+          We analyzed the glucose levels within the full 10 days in which the experiment took place. Our visualization contained three participants in order to avoid data clustering, in which the three participants were selected by participants with the least amount of missing data. All three participants had consistent glucose and food meal data for all ten days which is why we  decided to use them for our visuals. Furthermore, we included a filter in the legend, in which specific participants could be selected to be displayed. This along with the zoom feature negates the potential issues of data clustering within the visual. 
+
+        </p>
+        <p>
+          Additionally every meal that the participants ate in those 10 days were also included at the time in which it was eaten. Upon clicking each meal, it displays essential information about that meal through the use of a toolkit. We decided to create filters based on some assumptions. 
+        </p>
+        <p><strong>Assumptions:</strong></p>
+        <ul>
+          <li><strong>Sugary Meals Lead to Higher Spikes in Glucose Levels (50g>)
+          </strong></li> 
+          <li><strong>Higher Calorie Meals Results to Higher Spikes in Glucose Levels(300>)
+          </strong> </li>
+          <li><strong>Carb Heavy Meals Causes Higher Spikes in Glucose Levels (50>)
+          </strong> </li>
+        </ul>
+        <p> 
+          Finally to add more visual appeal and for users to better visualize the change in glucose levels after a meal, we added an animation feature in which traces the first three hours of the glucose levels after a meal was eaten. 
+        </p>
   </header>
 
 
@@ -495,11 +519,31 @@
   <link rel="stylesheet" href="css/style.css">
 
   <header class="thin-text">
+    <h3>Breaking Down the Results</h3>
+    <ul>
+      <li>
+        In general it does seem that fewer calories, meals with low sugar and carbs tend to have less of a significant effect on the glucose levels compared to meals with these qualities which often lead to heavy fluctuations, especially if it meets all three criterias.
+      </li>
+      <li>
+        Carbohydrates levels seemed to be the most impactful determinants of glucose levels, even more so than sugar. Some of the most drastic peaks occurred after meals with lower amounts of sugar but a high amount of carbohydrates. 
+      </li>
+      <li>
+        One Shocking finding is that the time of day seems to play a heavy role on the glucose levels, sometimes being more impactful than the meal being eaten. It seems like for most participants on most days, their glucose levels seem to peak during noon, regardless of whether they have eaten lunch or not.  
+      </li>
+    </ul>
+  </header>
+  <header class="thin-text">
     <h1>Final Takeaway</h1>
     <p>
       One surprising takeaway is that your skin’s sweat activity and temperature closely match changes in blood sugar for both people with and without diabetes. Many would assume that your heart rate or other heart signals are the main warning signs, but this visualization shows otherwise by separating the data into two groups and clearly marking which measures are most related to glucose changes. Because it highlights these patterns side by side with easy-to-read labels and color coding, it becomes obvious how these two signals remain consistently tied to blood sugar across different health conditions. This clear setup makes the visualization both simple to spot and difficult to ignore.
-
+    </p>
+    <p>
+      However, since there is no universal scale that defines how specific health metrics correspond to glucose levels for everyone- For populations with different Hb1Ac levels, a spike in Heart Rate can correlate with different fluctuations in blood sugar levels. Therefore, while wearable devices offer a promising way to support blood sugar monitoring, they should not be used as a standalone tool for managing conditions like diabetes. Instead, they serve as a complementary resource, helping users identify trends and patterns in their own health data.
+    </p>
+    <p>
+      But the data collected from the wearable devices, more specifically the glucose data, when combined with food log data offered some insightful results. The one thing everyone should learn from this project is that our daily dietary choices, - especially high carbohydrate intake and the timing of meals- play an important role in triggering certain fluctuations in our glucose levels. Our visualization successfully displays this by combining the data of a detailed meal log with the continuous data of glucose levels, and utilizing interactive filters and animations to show the impact of certain meals on the levels. Offering compelling insight which could be useful for individuals when making the correct dietary choices that prioritize their health. 
     </p>
   </header>
+
 </body>
 </html>
