@@ -1,7 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 let allGlucoseData, allMealData;
-const fullTimeDomain = [0, 14400]; 
+const fullTimeDomain = [0, 14400]; // full domain in minutes (10 days)
 const minutesPerDay = 1440;
 
 const participantColors = {
@@ -47,14 +47,16 @@ function getGlucoseAtTime(participantId, time) {
 }
 
 function updateVisualization(timeDomain) {
-  
+  // Remove previous SVG if exists
   d3.select("#food-visualization").select("svg").remove();
 
+  // Get selected participants from checkboxes
   const selectedParticipants = Array.from(document.querySelectorAll(".participant-checkbox:checked"))
                                     .map(cb => cb.value);
   let glucoseData = allGlucoseData.filter(d => selectedParticipants.includes(d.participant_id));
   let mealData = allMealData.filter(d => selectedParticipants.includes(d.participant_id));
 
+  // Apply meal filters
   if (document.getElementById("high-sugar").checked) {
     mealData = mealData.filter(d => d.sugar > 50);
   }
@@ -62,18 +64,16 @@ function updateVisualization(timeDomain) {
     mealData = mealData.filter(d => d.calorie > 300);
   }
 
+  // Enforce strict boundaries based on current timeDomain
   glucoseData = glucoseData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
   mealData = mealData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
 
-  const dataByParticipant = d3.group(glucoseData, d => d.participant_id);
-
-  const yMin = d3.min(glucoseData, d => d.Glucose);
-  const yMax = d3.max(glucoseData, d => d.Glucose);
-
+  // Define margins and dimensions
   const margin = { top: 20, right: 40, bottom: 50, left: 60 };
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
+  // Create SVG element
   const svg = d3.select("#food-visualization")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -81,37 +81,37 @@ function updateVisualization(timeDomain) {
                 .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  
-  let dayStart = Math.floor(timeDomain[0] / minutesPerDay) + 1;
-  let dayEnd = Math.ceil(timeDomain[1] / minutesPerDay);
-  const days = d3.range(dayStart, dayEnd + 1).map(d => `Day ${d}`);
-  const x = d3.scaleBand()
-              .domain(days)
-              .range([0, width])
-              .padding(0.1);
+  // Use a continuous linear x-scale for the full domain
+  const x = d3.scaleLinear()
+              .domain(timeDomain)
+              .range([0, width]);
 
+  // Determine zoom level: if domain span is less than one day, we are zoomed in.
   const isZoomedIn = (timeDomain[1] - timeDomain[0]) < minutesPerDay;
+
+  // Define x-axis with conditional tick formatting
   let xAxis;
   if (isZoomedIn) {
-    x.domain([timeDomain[0], timeDomain[1]]);
+    // For a zoomed-in day, display HH:MM (relative to day start)
     xAxis = d3.axisBottom(x)
               .tickFormat(d => {
-                let hours = Math.floor(d % minutesPerDay / 60);
-                let minutes = d % 60;
+                let local = d - Math.floor(d / minutesPerDay) * minutesPerDay;
+                let hours = Math.floor(local / 60);
+                let minutes = Math.floor(local % 60);
                 return `${hours}:${minutes.toString().padStart(2, '0')}`;
               });
   } else {
-    xAxis = d3.axisBottom(x);
+    // For full view, display ticks as "Day X"
+    xAxis = d3.axisBottom(x)
+              .tickFormat(d => "Day " + (Math.floor(d / minutesPerDay) + 1));
   }
 
-  const y = d3.scaleLinear()
-              .domain([yMin - 5, yMax + 5])
-              .range([height, 0]);
-
-  const xAxisG = svg.append("g")
-                    .attr("class", "x-axis")
-                    .attr("transform", `translate(0, ${height})`)
-                    .call(xAxis);
+  // Add x-axis
+  svg.append("g")
+     .attr("class", "x-axis")
+     .attr("transform", `translate(0, ${height})`)
+     .call(xAxis);
+  // X-axis label
   svg.append("text")
      .attr("class", "axis-label")
      .attr("x", width / 2)
@@ -119,9 +119,18 @@ function updateVisualization(timeDomain) {
      .attr("text-anchor", "middle")
      .text(isZoomedIn ? "Time (HH:MM)" : "Day");
 
+  // Define y-scale for glucose values
+  const yMin = d3.min(glucoseData, d => d.Glucose);
+  const yMax = d3.max(glucoseData, d => d.Glucose);
+  const y = d3.scaleLinear()
+              .domain([yMin - 5, yMax + 5])
+              .range([height, 0]);
+
+  // Add y-axis
   svg.append("g")
      .attr("class", "y-axis")
      .call(d3.axisLeft(y));
+  // y-axis label
   svg.append("text")
      .attr("class", "axis-label")
      .attr("transform", "rotate(-90)")
@@ -130,19 +139,15 @@ function updateVisualization(timeDomain) {
      .attr("text-anchor", "middle")
      .text("Glucose (mg/dL)");
 
+  // Line generator (always use continuous time values)
   const lineGenerator = d3.line()
-                          .x(d => {
-                            // Determine day for each data point for categorical scale or use raw value for zoomed view
-                            if (!isZoomedIn) {
-                              let day = Math.floor(d.TimeInMinutes / minutesPerDay) + 1;
-                              return x(`Day ${day}`) + x.bandwidth() / 2;
-                            } else {
-                              return x(d.TimeInMinutes);
-                            }
-                          })
+                          .x(d => x(d.TimeInMinutes))
                           .y(d => y(d.Glucose));
 
+  // Group data by participant and draw their glucose lines with animation
+  const dataByParticipant = d3.group(glucoseData, d => d.participant_id);
   dataByParticipant.forEach((values, participant) => {
+    // Ensure only current domain data is used
     values = values.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
     if(values.length === 0) return;
     const path = svg.append("path")
@@ -151,6 +156,7 @@ function updateVisualization(timeDomain) {
        .attr("stroke", participantColors[participant] || "steelblue")
        .attr("stroke-width", 1.5)
        .attr("d", lineGenerator);
+    // Animate the line drawing
     const totalLength = path.node().getTotalLength();
     path
       .attr("stroke-dasharray", totalLength + " " + totalLength)
@@ -161,19 +167,13 @@ function updateVisualization(timeDomain) {
       .attr("stroke-dashoffset", 0);
   });
 
+  // Draw meal dots with tooltip interaction
   svg.selectAll("circle.meal-dot")
      .data(mealData)
      .enter()
      .append("circle")
      .attr("class", "meal-dot")
-     .attr("cx", d => {
-       if (!isZoomedIn) {
-         let day = Math.floor(d.TimeInMinutes / minutesPerDay) + 1;
-         return x(`Day ${day}`) + x.bandwidth() / 2;
-       } else {
-         return x(d.TimeInMinutes);
-       }
-     })
+     .attr("cx", d => x(d.TimeInMinutes))
      .attr("cy", d => {
        const gValue = getGlucoseAtTime(d.participant_id, d.TimeInMinutes);
        return gValue !== null ? y(gValue) : y((yMin + yMax) / 2);
@@ -183,17 +183,18 @@ function updateVisualization(timeDomain) {
      .attr("stroke", "white")
      .attr("stroke-width", 1)
      .on("click", (event, d) => {
-       const tooltip = d3.select("#tooltip");
-       tooltip.html(
-         `<p><strong>Meal:</strong> ${d.logged_food}</p>
-          <p><strong>Time (min):</strong> ${d.TimeInMinutes.toFixed(0)}</p>
-          <p><strong>Calories:</strong> ${d.calorie}</p>
-          <p><strong>Total Carbs:</strong> ${d.total_carb}</p>
-          <p><strong>Sugar:</strong> ${d.sugar}</p>`
-       )
-       .style("left", (event.clientX + 10) + "px")
-       .style("top", (event.clientY - 20) + "px")
-       .style("display", "block");
+       // Show tooltip near the cursor with meal details
+       d3.select("#tooltip")
+         .html(
+           `<p><strong>Meal:</strong> ${d.logged_food}</p>
+            <p><strong>Time (min):</strong> ${d.TimeInMinutes.toFixed(0)}</p>
+            <p><strong>Calories:</strong> ${d.calorie}</p>
+            <p><strong>Total Carbs:</strong> ${d.total_carb}</p>
+            <p><strong>Sugar:</strong> ${d.sugar}</p>`
+         )
+         .style("left", (event.clientX + 10) + "px")
+         .style("top", (event.clientY - 20) + "px")
+         .style("display", "block");
        event.stopPropagation();
      })
      .on("mouseover", function(event, d) {
@@ -203,49 +204,61 @@ function updateVisualization(timeDomain) {
        d3.select(this).attr("fill", "black");
      });
 
+  // Hide tooltip when clicking outside of meal dots
   d3.select("body").on("click", function(event) {
     if (!event.target.closest(".meal-dot")) {
       d3.select("#tooltip").style("display", "none");
     }
   });
 
-  
+  // --- BRUSH-BASED ZOOM ---
   const brush = d3.brushX()
                   .extent([[0, 0], [width, height]])
                   .on("end", brushed);
   svg.append("g")
      .attr("class", "brush")
      .call(brush);
-
-  svg.selectAll("circle").raise();
+  // Re-raise circles so they remain on top of the brush overlay
+  svg.selectAll("circle.meal-dot").raise();
 
   function brushed({selection}) {
     if (!selection) return;
     let [x0, x1] = selection;
+    // Invert the pixel selection to obtain the corresponding time values
+    let t0 = x.invert(x0);
+    let t1 = x.invert(x1);
     let newDomain;
     if (!isZoomedIn) {
-      
-      let day0 = Math.floor(x0 / (width / days.length)) + dayStart;
-      let day1 = Math.floor(x1 / (width / days.length)) + dayStart;
-      newDomain = [(day0 - 1) * minutesPerDay, day1 * minutesPerDay];
+      // Snap to full day boundaries: round down/up to nearest day
+      let day0 = Math.floor(t0 / minutesPerDay);
+      let day1 = Math.ceil(t1 / minutesPerDay);
+      newDomain = [day0 * minutesPerDay, day1 * minutesPerDay];
     } else {
-      newDomain = [x.invert(x0), x.invert(x1)];
+      newDomain = [t0, t1];
     }
+    // Clear the brush selection
     svg.select(".brush").call(brush.move, null);
+    // Update visualization with the new domain
     updateVisualization(newDomain);
   }
 }
 
+// Reset zoom button to restore full view
 document.getElementById("resetZoom").addEventListener("click", () => {
   updateVisualization(fullTimeDomain);
 });
 
+// Re-render visualization when filter checkboxes change
 document.querySelectorAll(".participant-checkbox, #high-sugar, #high-calorie")
   .forEach(input => {
     input.addEventListener("change", () => {
       updateVisualization(fullTimeDomain);
     });
   });
+
+// Initial render
+updateVisualization(fullTimeDomain);
+
 
 document.addEventListener("DOMContentLoaded", function () {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
@@ -269,5 +282,3 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
-updateVisualization(fullTimeDomain);
