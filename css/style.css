@@ -34,110 +34,69 @@ body {
   transition: opacity 0.3s ease-out;
 }
 
-/* THIN CONTENT (INTRODUCTION BOX) */
-#thin-content {
+/* Unified styling for thin text sections */
+#thin-content,
+#thin-text-2,
+#thin-text-3,
+#thin-text-4,
+.thin-text {
   max-width: 600px;
-  text-align: left;
-  background: white;
+  margin: 40px auto;
   padding: 25px;
+  background: white;
   border-radius: 8px;
+  text-align: left;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 30px;
-}
-#thin-content p {
-  font-size: 17px;
-  color: #333;
+  font-size: 16px;
   line-height: 1.8;
-  margin-bottom: 15px;
-}
-#thin-content strong {
-  font-weight: bold;
-  color: #123861; 
+  color: #333;
 }
 
-/* SECTION: #thin-text-2 (DATA EXPLANATION & METHODOLOGY) */
-#thin-text-2 {
-  max-width: 600px; 
-  text-align: left;
-  background: white; 
-  padding: 25px;
-  border-radius: 8px;
-  margin: 40px auto; 
+/* THIN CONTENT (INTRODUCTION BOX) */
+/* Removed ID-based thin content styles
+#thin-content p,
+#thin-content strong,
+#thin-text-2 h3,
+#thin-text-2 p,
+#thin-text-2 ul,
+#thin-text-2 li,
+#thin-text-2 strong,
+#thin-text-2 span,
+#thin-text-3 h3,
+#thin-text-3 p,
+#thin-text-3 strong,
+#thin-text-3 br,
+#thin-text-4 h3,
+#thin-text-4 p
+*/
+
+/* Consolidate under .thin-text */
+.thin-text {
+  /* already declared in existing universal block, we keep as is */
 }
-#thin-text-2 h3 {
+
+.thin-text h3 {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
 }
-#thin-text-2 p {
+
+.thin-text p,
+.thin-text li {
   font-size: 16px;
-  color: #3d3d3d;
+  color: #333;
   line-height: 1.8;
   margin-bottom: 15px;
 }
-#thin-text-2 ul {
+
+.thin-text ul {
   padding-left: 20px;
   margin-bottom: 15px;
 }
-#thin-text-2 li {
-  font-size: 16px;
-  line-height: 1.6;
-}
-#thin-text-2 strong {
-  font-weight: bold;
-}
-#thin-text-2 span {
-  font-weight: bold;
-}
 
-
-/* SECTION: #thin-text-3 (RESULTS INTERPRETATION) */
-#thin-text-3 {
-  max-width: 600px; 
-  text-align: left;
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  margin: 40px auto; 
-}
-#thin-text-3 h3 {
-  text-align: center;
-  font-size: 20px;
+.thin-text strong {
   font-weight: bold;
-  margin-bottom: 15px;
-}
-#thin-text-3 p {
-  font-size: 16px;
-  color: #333;
-  line-height: 1.8;
-  margin-bottom: 15px;
-}
-#thin-text-3 strong {
-  font-weight: bold;
-}
-#thin-text-3 br {
-  margin-bottom: 10px;
-}
-
-/* SECTION: #thin-text-4 (HBA1C SLIDER EXPLANATION) */
-#thin-text-4 {
-  max-width: 600px;
-  text-align: left;
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  margin: 40px auto;
-}
-#thin-text-4 h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-#thin-text-4 p {
-  font-size: 16px;
-  color: #333;
-  line-height: 1.8;
-  margin-bottom: 15px;
+  color: #123861;
 }
 
 /* CHART LAYOUT (CORRELATION CHARTS) */
@@ -317,16 +276,6 @@ body {
 .moving-marker {
   pointer-events: none;
   opacity: 0.8;
-}
-
-.thin-text {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 25px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: left;
 }
 
 .thin-text h1,
