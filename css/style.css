@@ -191,11 +191,9 @@ body {
   border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
-
 #controls h2 {
   margin: 5px 0;
 }
-
 #participant-filters label,
 #meal-filters label {
   margin-right: 15px;
@@ -249,10 +247,9 @@ body {
   stroke-width: 1;
 }
 
-/* Line animation */
-.path-animation {
-  stroke-dasharray: 0;
-  stroke-dashoffset: 0;
+/* Response marker styling */
+.response-marker {
+  pointer-events: none;
 }
 
 <<<<<<< HEAD
