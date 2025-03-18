@@ -47,16 +47,16 @@ function getGlucoseAtTime(participantId, time) {
 }
 
 function updateVisualization(timeDomain) {
-  // Remove previous SVG if exists
+  // Remove previous SVG if it exists
   d3.select("#food-visualization").select("svg").remove();
 
-  // Get selected participants and filter data accordingly.
+  // Get selected participants
   const selectedParticipants = Array.from(document.querySelectorAll(".participant-checkbox:checked"))
                                     .map(cb => cb.value);
   let glucoseData = allGlucoseData.filter(d => selectedParticipants.includes(d.participant_id));
   let mealData = allMealData.filter(d => selectedParticipants.includes(d.participant_id));
 
-  // Apply meal filters (sugar, calorie, carb)
+  // Apply meal filters (sugar, calorie, and carb)
   if (document.getElementById("high-sugar").checked) {
     mealData = mealData.filter(d => d.sugar > 50);
   }
@@ -67,7 +67,7 @@ function updateVisualization(timeDomain) {
     mealData = mealData.filter(d => d.total_carb > 50);
   }
 
-  // Enforce strict boundaries on the current timeDomain
+  // Enforce strict boundaries based on current timeDomain
   glucoseData = glucoseData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
   mealData = mealData.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
 
@@ -84,17 +84,18 @@ function updateVisualization(timeDomain) {
                 .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Continuous linear x-scale over the full domain
+  // Use a continuous linear x-scale over the full domain
   const x = d3.scaleLinear()
               .domain(timeDomain)
               .range([0, width]);
 
-  // Determine if we are zoomed in (domain span <= one day)
+  // Determine zoom level: if domain span <= one day, consider it zoomed in.
   const isZoomedIn = (timeDomain[1] - timeDomain[0]) <= minutesPerDay;
 
   // Define x-axis with conditional tick formatting
   let xAxis;
   if (isZoomedIn) {
+    // When zoomed in, display ticks as "HH:MM (Day X)"
     xAxis = d3.axisBottom(x)
               .tickFormat(d => {
                 let day = Math.floor(d / minutesPerDay) + 1;
@@ -104,6 +105,7 @@ function updateVisualization(timeDomain) {
                 return `${hours}:${minutes.toString().padStart(2, '0')} (Day ${day})`;
               });
   } else {
+    // For full view, display ticks as "Day X"
     xAxis = d3.axisBottom(x)
               .tickFormat(d => "Day " + (Math.floor(d / minutesPerDay) + 1));
   }
@@ -139,12 +141,13 @@ function updateVisualization(timeDomain) {
      .attr("text-anchor", "middle")
      .text("Glucose (mg/dL)");
 
-  // Line generator for glucose values
+  // Define line generator for glucose values
   const lineGenerator = d3.line()
                           .x(d => x(d.TimeInMinutes))
                           .y(d => y(d.Glucose));
 
-  // Draw glucose lines for each participant; assign a class with their id.
+  // Draw glucose lines for each participant.
+  // Each line gets a class with the participant id.
   const dataByParticipant = d3.group(glucoseData, d => d.participant_id);
   dataByParticipant.forEach((values, participant) => {
     values = values.filter(d => d.TimeInMinutes >= timeDomain[0] && d.TimeInMinutes <= timeDomain[1]);
@@ -168,7 +171,7 @@ function updateVisualization(timeDomain) {
   });
 
   // Draw meal dots.
-  // Each dot is filled with a lighter version of the line color and stroked with the original color.
+  // Fill: lighter version of participant color; Stroke: participant color.
   svg.selectAll("circle.meal-dot")
      .data(mealData)
      .enter()
@@ -205,38 +208,36 @@ function updateVisualization(timeDomain) {
          .style("display", "block");
        event.stopPropagation();
        
-       // Dim all glucose lines (including the selected participant's line)
+       // Dim all glucose lines
        svg.selectAll("path.glucose-line")
           .transition().duration(500)
           .style("opacity", 0.2);
        
-       // Start the response animation for this meal.
+       // Animate the glucose response for this meal and highlight the segment.
        animateGlucoseResponse(d.participant_id, d.TimeInMinutes);
      })
      .on("mouseover", function(event, d) {
-       d3.select(this)
-         .attr("fill", d3.rgb(participantColors[d.participant_id]).brighter(0.5));
+       d3.select(this).attr("fill", d3.rgb(participantColors[d.participant_id]).brighter(0.5));
      })
      .on("mouseout", function(event, d) {
-       d3.select(this)
-         .attr("fill", d3.rgb(participantColors[d.participant_id]).brighter(1));
+       d3.select(this).attr("fill", d3.rgb(participantColors[d.participant_id]).brighter(1));
      });
 
-  // Hide tooltip when clicking outside meal dots.
+  // Hide tooltip when clicking outside of meal dots
   d3.select("body").on("click", function(event) {
     if (!event.target.closest(".meal-dot")) {
       d3.select("#tooltip").style("display", "none");
     }
   });
 
-  // ------------------------------------------
-  // Glucose Response Animation:
-  // Dim all lines are already at opacity 0.2.
-  // For the selected participant, draw a highlighted segment (full opacity) for the 3-hour window after the meal,
-  // and animate a marker along that segment.
+  // ---------------------------
+  // Glucose Response Animation function.
+  // This function dims all glucose lines, then for the selected participant,
+  // it draws a highlighted segment over the 3-hour window after the meal,
+  // and animates a marker along that segment.
   function animateGlucoseResponse(participantId, mealTime) {
     const responseDuration = 180; // 3 hours in minutes
-    // Filter data for this participant for the response period.
+    // Filter the glucose data for the response period for this participant.
     const responseSegment = allGlucoseData.filter(d =>
       d.participant_id === participantId &&
       d.TimeInMinutes >= mealTime &&
@@ -244,7 +245,7 @@ function updateVisualization(timeDomain) {
     );
     if (responseSegment.length === 0) return;
     
-    // Draw a highlight segment over the response window (full opacity).
+    // Draw a highlighted segment over the response window.
     const highlightPath = svg.append("path")
       .datum(responseSegment)
       .attr("class", "response-highlight")
@@ -253,25 +254,29 @@ function updateVisualization(timeDomain) {
       .attr("stroke-width", 3)
       .attr("d", lineGenerator);
       
-    // Append a marker for the animation.
+    // Append a marker; now the marker will be filled with a darker version of the participant color.
     const marker = svg.append("circle")
                       .attr("class", "response-marker")
                       .attr("r", 8)
                       .attr("fill", d3.rgb(participantColors[participantId]).darker(1))
                       .attr("stroke", d3.rgb(participantColors[participantId]).darker(2))
                       .attr("stroke-width", 2);
-    // Set marker at meal time position.
+    // Set initial marker position at meal time.
     marker.attr("cx", x(mealTime))
           .attr("cy", y(getGlucoseAtTime(participantId, mealTime)));
     
-    const totalAnimDuration = 3000; // in milliseconds
+    const totalAnimDuration = 3000; // 3 seconds for animation
     const timer = d3.timer(function(elapsed) {
       let progress = elapsed / totalAnimDuration;
       let currentTime = mealTime + progress * responseDuration;
       if (currentTime > mealTime + responseDuration) {
         timer.stop();
         marker.remove();
-        // Do not restore full opacity; leave all lines dimmed, and the highlight segment remains.
+        highlightPath.remove();
+        // Restore full opacity to all glucose lines.
+        svg.selectAll("path.glucose-line")
+           .transition().duration(500)
+           .style("opacity", 1);
         return;
       }
       // Update marker position along the response segment.
@@ -280,7 +285,7 @@ function updateVisualization(timeDomain) {
     });
   }
 
-  // ------------------------------------------
+  // ---------------------------
   // BRUSH-BASED ZOOM
   const brush = d3.brushX()
                   .extent([[0, 0], [width, height]])
@@ -288,7 +293,7 @@ function updateVisualization(timeDomain) {
   svg.append("g")
      .attr("class", "brush")
      .call(brush);
-  // Bring meal dots to the front so tooltip remains accessible.
+  // Bring meal dots to the front so the tooltip remains accessible.
   svg.selectAll("circle.meal-dot").raise();
 
   function brushed({selection}) {
@@ -299,18 +304,21 @@ function updateVisualization(timeDomain) {
     let t1 = x.invert(x1);
     let newDomain;
     if (!isZoomedIn) {
+      // Snap to full day boundaries (round down/up).
       let day0 = Math.floor(t0 / minutesPerDay);
       let day1 = Math.ceil(t1 / minutesPerDay);
       newDomain = [day0 * minutesPerDay, day1 * minutesPerDay];
     } else {
       newDomain = [t0, t1];
     }
+    // Clear the brush selection.
     svg.select(".brush").call(brush.move, null);
+    // Update visualization with the new domain.
     updateVisualization(newDomain);
   }
 }
 
-// Reset zoom button restores the full view.
+// Reset zoom button to restore the full view.
 document.getElementById("resetZoom").addEventListener("click", () => {
   updateVisualization(fullTimeDomain);
 });
@@ -325,7 +333,6 @@ document.querySelectorAll(".participant-checkbox, #high-sugar, #high-calorie, #h
 
 // Initial render.
 updateVisualization(fullTimeDomain);
-
 
 
 document.addEventListener("DOMContentLoaded", function () {
