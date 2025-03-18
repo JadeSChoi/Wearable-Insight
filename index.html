@@ -332,10 +332,52 @@
   });
 
   document.getElementById("hba1c-slider").addEventListener("input", function() {
-      let selectedValue = parseFloat(this.value);
-      document.getElementById("hba1c-value").innerText = selectedValue;
-      updateCharts(selectedValue);
-  });
+    let selectedValue = parseFloat(this.value).toFixed(1);
+    
+    if (!dataExists(selectedValue)) {
+        let nextValidValue = findNextValidHba1c(selectedValue);
+        if (nextValidValue !== null) {
+            this.value = nextValidValue; // Move slider to next valid value
+            selectedValue = nextValidValue;
+        } else {
+            console.warn("No valid HbA1c data points available.");
+            return;
+        }
+    }
+
+    document.getElementById("hba1c-value").innerText = selectedValue;
+    updateCharts(selectedValue);
+});
+
+  // Function to check if data exists for a given HbA1c value
+  function dataExists(hba1cValue) {
+      return correlationData[hba1cValue] !== undefined;
+  }
+
+  // Function to find the next valid HbA1c level if current level has no data
+  function findNextValidHba1c(currentValue) {
+      let min = parseFloat(document.getElementById("hba1c-slider").min);
+      let max = parseFloat(document.getElementById("hba1c-slider").max);
+      let step = parseFloat(document.getElementById("hba1c-slider").step);
+      
+      let nextValue = parseFloat(currentValue);
+      
+      // Try moving forward first
+      while (nextValue <= max) {
+          nextValue = (nextValue + step).toFixed(1);
+          if (dataExists(nextValue)) return nextValue;
+      }
+
+      // If no forward value, try moving backward
+      nextValue = parseFloat(currentValue);
+      while (nextValue >= min) {
+          nextValue = (nextValue - step).toFixed(1);
+          if (dataExists(nextValue)) return nextValue;
+      }
+
+      return null; // No valid HbA1c data points found
+  }
+
 
   function updateCharts(hba1cLevel) {
       let data = correlationData[hba1cLevel] || {
